@@ -1,4 +1,4 @@
-import { resolveAccessToken } from "../lib/credentials.js";
+import { resolveAccessToken } from "./credentials.js";
 import {
   complete,
   getModel,

@@ -14,6 +14,7 @@ import {
   startDaemon,
   stopDaemon,
 } from "./lib/daemon-control.js";
+import { serializeCredentialsForDaemon } from "./lib/credentials.js";
 
 type Preferences = {
   proxyPort: string;
@@ -30,33 +31,44 @@ async function refresh(
   options: { autoStart?: boolean } = {},
 ) {
   setState({ loading: true, markdown: "Checking proxy..." });
-  const config = await loadAppConfig(proxyPort);
-  let status = await getDaemonStatus();
-  let note = "";
-  if (!status.running && options.autoStart !== false) {
-    status = await startDaemon(config);
-    note = "Proxy was stopped and has been started.";
+  try {
+    const config = await loadAppConfig(proxyPort);
+    let status = await getDaemonStatus();
+    let note = "";
+    if (!status.running && options.autoStart !== false) {
+      status = await startDaemon({
+        ...config,
+        credentials: await serializeCredentialsForDaemon(),
+      });
+      note = "Proxy was stopped and has been started.";
+    }
+    const healthy = await pingDaemon(config.port, config.token);
+    setState({
+      loading: false,
+      markdown: [
+        "# ChatGPT Provider Proxy",
+        "",
+        `Port: \`${config.port}\``,
+        `Process: ${status.running ? `running, pid \`${status.pid}\`` : "stopped"}`,
+        `Health: ${healthy ? "ok" : "not reachable"}`,
+        `Log: \`${status.logPath}\``,
+        note ? `\n${note}` : "",
+      ].join("\n"),
+    });
+  } catch (error) {
+    const message = error instanceof Error ? error.message : String(error);
+    setState({ loading: false, markdown: message });
   }
-  const healthy = await pingDaemon(config.port, config.token);
-  setState({
-    loading: false,
-    markdown: [
-      "# ChatGPT Provider Proxy",
-      "",
-      `Port: \`${config.port}\``,
-      `Process: ${status.running ? `running, pid \`${status.pid}\`` : "stopped"}`,
-      `Health: ${healthy ? "ok" : "not reachable"}`,
-      `Log: \`${status.logPath}\``,
-      note ? `\n${note}` : "",
-    ].join("\n"),
-  });
 }
 
 async function start(proxyPort: string, setState: (state: State) => void) {
   setState({ loading: true, markdown: "Starting proxy..." });
   try {
     const config = await loadAppConfig(proxyPort);
-    await startDaemon(config);
+    await startDaemon({
+      ...config,
+      credentials: await serializeCredentialsForDaemon(),
+    });
     await showToast({ style: Toast.Style.Success, title: "Proxy started" });
     await refresh(proxyPort, setState);
   } catch (error) {

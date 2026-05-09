@@ -4,6 +4,7 @@ import { createWriteStream } from "node:fs";
 import path from "node:path";
 import { daemonLogPath, daemonPidPath } from "./paths.js";
 import { ensureAppDir, fileExists } from "./config.js";
+import { OAUTH_ENV_KEY } from "./oauth-credentials.js";
 
 export type DaemonStatus = {
   running: boolean;
@@ -52,6 +53,7 @@ export async function stopDaemon(): Promise<boolean> {
 export async function startDaemon(params: {
   port: number;
   token: string;
+  credentials: string;
 }): Promise<DaemonStatus> {
   const status = await getDaemonStatus();
   if (status.running) {
@@ -77,7 +79,7 @@ export async function startDaemon(params: {
   }
   if (!(await fileExists(resolvedEntry))) {
     throw new Error(
-      `Daemon is not packaged. Run "pnpm dev" or "pnpm build". Checked: ${candidates.join(", ")}`,
+      `Daemon is not packaged. Run "npm run dev" or "npm run build". Checked: ${candidates.join(", ")}`,
     );
   }
 
@@ -89,6 +91,7 @@ export async function startDaemon(params: {
       ...process.env,
       RAYCAST_CHATGPT_PROXY_PORT: String(params.port),
       RAYCAST_CHATGPT_PROXY_TOKEN: params.token,
+      [OAUTH_ENV_KEY]: params.credentials,
     },
   });
   child.stdout?.pipe(log);

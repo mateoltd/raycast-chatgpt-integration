@@ -31,13 +31,13 @@ This project bridges that gap:
 Install dependencies:
 
 ```bash
-pnpm install
+npm install
 ```
 
 Start the extension in Raycast development mode:
 
 ```bash
-pnpm dev
+npm run dev
 ```
 
 In Raycast, run these commands:
@@ -50,11 +50,13 @@ Then open Raycast Settings -> AI and enable Custom Providers. If the models do n
 
 ## Files Written
 
-Credentials and proxy state:
+Proxy state:
 
 ```text
 ~/.raycast-chatgpt-provider
 ```
+
+OAuth credentials are stored in Raycast extension storage. Older file-based credentials are migrated and removed the first time the extension reads them.
 
 Raycast provider config:
 
@@ -65,8 +67,8 @@ Raycast provider config:
 ## Development Checks
 
 ```bash
-pnpm typecheck
-pnpm test
-pnpm lint
-pnpm build
+npm run typecheck
+npm test
+npm run lint
+npm run build
 ```
