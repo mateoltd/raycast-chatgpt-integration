@@ -48,7 +48,7 @@
   "scripts": {
     "build": "npm run build:daemon:asset && ray build",
     "build:daemon": "tsc -p tsconfig.daemon.json",
-    "build:daemon:asset": "npm run build:daemon && rm -rf assets/daemon-dist && mkdir -p assets/daemon-dist && esbuild src/daemon/server.ts --bundle --platform=node --format=cjs --target=node22 --outfile=assets/daemon-dist/server.cjs",
+    "build:daemon:asset": "npm run build:daemon && node scripts/build-daemon-asset.mjs",
     "dev": "npm run build:daemon:asset && ray develop",
     "lint": "ray lint",
     "publish": "npx @raycast/api@latest publish",
