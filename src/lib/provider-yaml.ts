@@ -1,6 +1,5 @@
 import fs from "node:fs/promises";
 import path from "node:path";
-import { getModels } from "@mariozechner/pi-ai";
 import YAML from "yaml";
 import { fileExists } from "./config.js";
 import { PROVIDER_ID, PROVIDER_NAME, raycastProvidersPath } from "./paths.js";
@@ -36,6 +35,79 @@ type ProvidersYaml = {
 
 type RaycastModel = RaycastProvider["models"][number];
 
+const OPENAI_CODEX_MODELS = [
+  {
+    id: "gpt-5.1",
+    name: "GPT-5.1",
+    contextWindow: 272000,
+    input: ["text", "image"],
+    reasoning: true,
+  },
+  {
+    id: "gpt-5.1-codex-max",
+    name: "GPT-5.1 Codex Max",
+    contextWindow: 272000,
+    input: ["text", "image"],
+    reasoning: true,
+  },
+  {
+    id: "gpt-5.1-codex-mini",
+    name: "GPT-5.1 Codex Mini",
+    contextWindow: 272000,
+    input: ["text", "image"],
+    reasoning: true,
+  },
+  {
+    id: "gpt-5.2",
+    name: "GPT-5.2",
+    contextWindow: 272000,
+    input: ["text", "image"],
+    reasoning: true,
+  },
+  {
+    id: "gpt-5.2-codex",
+    name: "GPT-5.2 Codex",
+    contextWindow: 272000,
+    input: ["text", "image"],
+    reasoning: true,
+  },
+  {
+    id: "gpt-5.3-codex",
+    name: "GPT-5.3 Codex",
+    contextWindow: 272000,
+    input: ["text", "image"],
+    reasoning: true,
+  },
+  {
+    id: "gpt-5.3-codex-spark",
+    name: "GPT-5.3 Codex Spark",
+    contextWindow: 128000,
+    input: ["text"],
+    reasoning: true,
+  },
+  {
+    id: "gpt-5.4",
+    name: "GPT-5.4",
+    contextWindow: 272000,
+    input: ["text", "image"],
+    reasoning: true,
+  },
+  {
+    id: "gpt-5.4-mini",
+    name: "GPT-5.4 Mini",
+    contextWindow: 272000,
+    input: ["text", "image"],
+    reasoning: true,
+  },
+  {
+    id: "gpt-5.5",
+    name: "GPT-5.5",
+    contextWindow: 272000,
+    input: ["text", "image"],
+    reasoning: true,
+  },
+];
+
 function toRaycastModel(model: {
   id: string;
   name?: string;
@@ -60,19 +132,7 @@ function toRaycastModel(model: {
 }
 
 export function getOpenAICodexRaycastModels(): RaycastModel[] {
-  const models = getModels("openai-codex").map(toRaycastModel);
-  if (models.length > 0) {
-    return models;
-  }
-  return [
-    toRaycastModel({
-      id: "gpt-5-codex",
-      name: "GPT-5 Codex",
-      contextWindow: 200000,
-      input: ["text"],
-      reasoning: true,
-    }),
-  ];
+  return OPENAI_CODEX_MODELS.map(toRaycastModel);
 }
 
 function makeProvider(baseUrl: string): RaycastProvider {
