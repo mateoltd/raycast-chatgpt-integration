@@ -34,7 +34,17 @@ Install dependencies:
 npm install
 ```
 
-Start the extension in Raycast development mode:
+Build the extension once:
+
+```bash
+npm run build
+```
+
+In Raycast, run `Import Extension` and select this repository folder.
+
+This adds the extension locally. You do not need to keep `npm run dev` running for normal use.
+
+If Raycast does not show the commands after import, run development mode once and stop it after it says the extension built successfully:
 
 ```bash
 npm run dev
@@ -47,6 +57,10 @@ In Raycast, run these commands:
 3. `Install Raycast AI Provider`
 
 Then open Raycast Settings -> AI and enable Custom Providers. If the models do not appear immediately, fully quit and reopen Raycast.
+
+After this setup, use Raycast normally. The `ChatGPT Provider Status` command starts the local proxy as a detached background process, so a terminal dev server does not need to stay open.
+
+Run `npm run build` again only when you change the extension code.
 
 ## Files Written
 
